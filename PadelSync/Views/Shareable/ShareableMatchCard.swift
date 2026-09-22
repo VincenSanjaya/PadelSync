@@ -13,7 +13,7 @@ struct ShareableMatchCard: View {
     let opponents: String
     let scoreDetails: String
     let partnerName: String?
-    let isWin: Bool
+    let result: MatchResult
     
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
@@ -33,9 +33,9 @@ struct ShareableMatchCard: View {
             
             // Result Banner
             VStack(alignment: .leading, spacing: 4) {
-                Text(isWin ? "VICTORY" : "MATCH RECORD")
+                Text(resultTitle)
                     .font(.system(size: 32, weight: .black, design: .rounded))
-                    .foregroundColor(isWin ? .padelMint : .white)
+                    .foregroundColor(resultColor)
                 
                 Text(courtName)
                     .font(.subheadline)
@@ -99,8 +99,24 @@ struct ShareableMatchCard: View {
         .cornerRadius(28)
         .overlay(
             RoundedRectangle(cornerRadius: 28)
-                .stroke(isWin ? Color.padelMint.opacity(0.5) : Color.padelBorder, lineWidth: 2)
+                .stroke(result == .loss ? Color.padelBorder : resultColor.opacity(0.5), lineWidth: 2)
         )
         .shadow(color: Color.black.opacity(0.5), radius: 20, x: 0, y: 10)
+    }
+    
+    private var resultTitle: String {
+        switch result {
+        case .win: return "VICTORY"
+        case .draw: return "DRAW"
+        case .loss: return "MATCH RECORD"
+        }
+    }
+    
+    private var resultColor: Color {
+        switch result {
+        case .win: return .padelMint
+        case .draw: return .padelNeon
+        case .loss: return .white
+        }
     }
 }

@@ -142,9 +142,10 @@ struct DashboardView: View {
             .background(Color.padelCard)
             .cornerRadius(20)
             
-            // Stats Grid (Wins & Losses)
-            HStack(spacing: 16) {
+            // Stats Grid (Wins, Draws & Losses)
+            HStack(spacing: 12) {
                 statBox(icon: "trophy", title: "WINS", value: "\(viewModel.totalWins)")
+                statBox(icon: "equal", title: "DRAWS", value: "\(viewModel.totalDraws)")
                 statBox(icon: "tennis.racket", title: "LOSSES", value: "\(viewModel.totalLosses)")
             }
             

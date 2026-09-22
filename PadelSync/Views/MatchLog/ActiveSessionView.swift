@@ -169,11 +169,11 @@ struct ActiveSessionView: View {
     // MARK: - Card Tampilan Game di Sesi Ini
     private func sessionGameCard(match: Match) -> some View {
         HStack(spacing: 16) {
-            Text(match.result == .win ? "W" : "L")
+            Text(resultLabel(for: match.result))
                 .font(.headline.bold())
-                .foregroundColor(match.result == .win ? Color.padelBackground : .white)
+                .foregroundColor(resultForegroundColor(for: match.result))
                 .frame(width: 40, height: 40)
-                .background(match.result == .win ? Color.padelMint : Color.padelLoss)
+                .background(resultBackgroundColor(for: match.result))
                 .cornerRadius(10)
             
             VStack(alignment: .leading, spacing: 4) {
@@ -198,5 +198,25 @@ struct ActiveSessionView: View {
         .background(Color.padelCard)
         .cornerRadius(14)
         .overlay(RoundedRectangle(cornerRadius: 14).stroke(Color.padelBorder, lineWidth: 1))
+    }
+    
+    private func resultLabel(for result: MatchResult) -> String {
+        switch result {
+        case .win: return "W"
+        case .draw: return "D"
+        case .loss: return "L"
+        }
+    }
+    
+    private func resultForegroundColor(for result: MatchResult) -> Color {
+        result == .win ? Color.padelBackground : .white
+    }
+    
+    private func resultBackgroundColor(for result: MatchResult) -> Color {
+        switch result {
+        case .win: return .padelMint
+        case .draw: return .padelNeon
+        case .loss: return .padelLoss
+        }
     }
 }

@@ -234,7 +234,7 @@ struct AddGameInSessionView: View {
     
     // MARK: - Save Logic
     private func saveGame() {
-        let isWin: Bool
+        let result: MatchResult
         let scoreString: String
         
         if scoringSystem == "Tennis" {
@@ -247,12 +247,24 @@ struct AddGameInSessionView: View {
                 else if set.them > set.us { themSets += 1 }
             }
             
-            isWin = usSets >= themSets // Aturan menang jika menang set terbanyak
+            if usSets > themSets {
+                result = .win
+            } else if usSets == themSets {
+                result = .draw
+            } else {
+                result = .loss
+            }
             
             // Gabungkan string skor secara otomatis (misal: "6-4" atau "6-4, 4-6, 7-5")
             scoreString = matchSets.map { "\($0.us)-\($0.them)" }.joined(separator: ", ")
         } else {
-            isWin = quickMyScore > quickOpponentScore
+            if quickMyScore > quickOpponentScore {
+                result = .win
+            } else if quickMyScore == quickOpponentScore {
+                result = .draw
+            } else {
+                result = .loss
+            }
             scoreString = "\(quickMyScore) - \(quickOpponentScore) pts"
         }
         
@@ -269,7 +281,7 @@ struct AddGameInSessionView: View {
         let newMatch = Match(
             date: Date(),
             courtName: location,
-            result: isWin ? .win : .loss,
+            result: result,
             scoreDetails: scoreString,
             opponents: opponents,
             partner: finalPartner

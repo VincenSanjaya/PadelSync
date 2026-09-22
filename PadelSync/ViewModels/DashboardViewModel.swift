@@ -28,6 +28,10 @@ class DashboardViewModel {
         matches.filter { $0.result == .loss }.count
     }
     
+    var totalDraws: Int {
+        matches.filter { $0.result == .draw }.count
+    }
+    
     var winRate: Double {
         // Cegah error pembagian dengan nol kalau aplikasinya baru di-install dan belum ada data
         guard totalMatches > 0 else { return 0.0 }

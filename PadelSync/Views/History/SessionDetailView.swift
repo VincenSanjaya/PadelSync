@@ -16,6 +16,9 @@ struct PadelSession: Identifiable {
     var lossesCount: Int {
         matches.filter { $0.result == .loss }.count
     }
+    var drawsCount: Int {
+        matches.filter { $0.result == .draw }.count
+    }
 }
 
 // MARK: - Session Detail View
@@ -38,7 +41,7 @@ struct SessionDetailView: View {
                         HStack {
                             Label(session.dateString, systemImage: "calendar")
                             Spacer()
-                            Text("Record: \(session.winsCount)W - \(session.lossesCount)L")
+                            Text("Record: \(session.winsCount)W - \(session.drawsCount)D - \(session.lossesCount)L")
                                 .bold()
                                 .foregroundColor(.padelMint)
                         }
@@ -79,11 +82,11 @@ struct SessionDetailView: View {
     
     private func matchDetailCard(match: Match) -> some View {
         HStack(spacing: 16) {
-            Text(match.result == .win ? "W" : "L")
+            Text(resultLabel(for: match.result))
                 .font(.subheadline.bold())
-                .foregroundColor(match.result == .win ? Color.padelBackground : .white)
+                .foregroundColor(resultForegroundColor(for: match.result))
                 .frame(width: 36, height: 36)
-                .background(match.result == .win ? Color.padelMint : Color.padelLoss)
+                .background(resultBackgroundColor(for: match.result))
                 .cornerRadius(10)
             
             VStack(alignment: .leading, spacing: 4) {
@@ -136,7 +139,7 @@ struct SessionDetailView: View {
             opponents: match.opponents,
             scoreDetails: match.scoreDetails,
             partnerName: match.partner?.name,
-            isWin: match.result == .win
+            result: match.result
         )
         
         let renderer = ImageRenderer(content: cardView)
@@ -152,5 +155,25 @@ struct SessionDetailView: View {
         let formatter = DateFormatter()
         formatter.dateStyle = .medium
         return formatter.string(from: date)
+    }
+    
+    private func resultLabel(for result: MatchResult) -> String {
+        switch result {
+        case .win: return "W"
+        case .draw: return "D"
+        case .loss: return "L"
+        }
+    }
+    
+    private func resultForegroundColor(for result: MatchResult) -> Color {
+        result == .win ? Color.padelBackground : .white
+    }
+    
+    private func resultBackgroundColor(for result: MatchResult) -> Color {
+        switch result {
+        case .win: return .padelMint
+        case .draw: return .padelNeon
+        case .loss: return .padelLoss
+        }
     }
 }

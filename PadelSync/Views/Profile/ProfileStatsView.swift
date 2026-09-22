@@ -158,24 +158,24 @@ struct ChartContainerView: View {
             ForEach(Array(matches.prefix(10).reversed().enumerated()), id: \.offset) { index, match in
                 LineMark(
                     x: .value("Game", index + 1),
-                    y: .value("Result", match.result == .win ? 1 : 0)
+                    y: .value("Result", chartValue(for: match.result))
                 )
                 .foregroundStyle(Color.padelNeon)
                 .interpolationMethod(.catmullRom)
                 
                 PointMark(
                     x: .value("Game", index + 1),
-                    y: .value("Result", match.result == .win ? 1 : 0)
+                    y: .value("Result", chartValue(for: match.result))
                 )
-                .foregroundStyle(match.result == .win ? Color.padelMint : Color.padelLoss)
+                .foregroundStyle(chartColor(for: match.result))
             }
         }
         .frame(height: 160)
         .chartYAxis {
-            AxisMarks(values: [0, 1]) { value in
+            AxisMarks(values: [0, 0.5, 1]) { value in
                 AxisValueLabel {
-                    if let intVal = value.as(Int.self) {
-                        Text(intVal == 1 ? "Win" : "Loss")
+                    if let doubleVal = value.as(Double.self) {
+                        Text(chartLabel(for: doubleVal))
                             .font(.caption2)
                             .foregroundColor(.padelMutedText)
                     }
@@ -187,6 +187,30 @@ struct ChartContainerView: View {
                 AxisValueLabel()
                     .foregroundStyle(Color.padelMutedText)
             }
+        }
+    }
+    
+    private func chartValue(for result: MatchResult) -> Double {
+        switch result {
+        case .win: return 1
+        case .draw: return 0.5
+        case .loss: return 0
+        }
+    }
+    
+    private func chartColor(for result: MatchResult) -> Color {
+        switch result {
+        case .win: return .padelMint
+        case .draw: return .padelNeon
+        case .loss: return .padelLoss
+        }
+    }
+    
+    private func chartLabel(for value: Double) -> String {
+        switch value {
+        case 1: return "Win"
+        case 0.5: return "Draw"
+        default: return "Loss"
         }
     }
 }

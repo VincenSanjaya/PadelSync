@@ -11,6 +11,7 @@ import SwiftData
 // Bikin opsi pasti buat hasil pertandingan biar datanya rapi, nggak ada yang ngetik typo
 enum MatchResult: String, Codable {
     case win = "WIN"
+    case draw = "DRAW"
     case loss = "LOSS"
 }
 

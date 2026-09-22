@@ -17,6 +17,7 @@ struct HistoryView: View {
     enum MatchFilter: String, CaseIterable {
         case all = "All"
         case wins = "Wins"
+        case draws = "Draws"
         case losses = "Losses"
     }
     
@@ -46,25 +47,27 @@ struct HistoryView: View {
                         .cornerRadius(12)
                         .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color.padelBorder, lineWidth: 1))
                         
-                        HStack(spacing: 8) {
-                            ForEach(MatchFilter.allCases, id: \.self) { filter in
-                                Button(action: {
-                                    withAnimation(.easeInOut) { selectedFilter = filter }
-                                }) {
-                                    Text(filter.rawValue)
-                                        .font(.caption.bold())
-                                        .padding(.horizontal, 16)
-                                        .padding(.vertical, 8)
-                                        .foregroundColor(selectedFilter == filter ? Color.padelBackground : .padelMutedText)
-                                        .background(selectedFilter == filter ? Color.padelNeon : Color.padelCard)
-                                        .cornerRadius(20)
-                                        .overlay(
-                                            RoundedRectangle(cornerRadius: 20)
-                                                .stroke(selectedFilter == filter ? Color.padelNeon : Color.padelBorder, lineWidth: 1)
-                                        )
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            HStack(spacing: 8) {
+                                ForEach(MatchFilter.allCases, id: \.self) { filter in
+                                    Button(action: {
+                                        withAnimation(.easeInOut) { selectedFilter = filter }
+                                    }) {
+                                        Text(filter.rawValue)
+                                            .font(.caption.bold())
+                                            .padding(.horizontal, 16)
+                                            .padding(.vertical, 8)
+                                            .foregroundColor(selectedFilter == filter ? Color.padelBackground : .padelMutedText)
+                                            .background(selectedFilter == filter ? Color.padelNeon : Color.padelCard)
+                                            .cornerRadius(20)
+                                            .overlay(
+                                                RoundedRectangle(cornerRadius: 20)
+                                                    .stroke(selectedFilter == filter ? Color.padelNeon : Color.padelBorder, lineWidth: 1)
+                                            )
+                                    }
                                 }
+                                Spacer(minLength: 0)
                             }
-                            Spacer()
                         }
                     }
                     .padding(.horizontal, 20)
@@ -120,6 +123,7 @@ struct HistoryView: View {
                 switch selectedFilter {
                 case .all: return true
                 case .wins: return match.result == .win
+                case .draws: return match.result == .draw
                 case .losses: return match.result == .loss
                 }
             }()
@@ -160,9 +164,12 @@ struct HistoryView: View {
                 Text("\(session.lossesCount)L")
                     .font(.caption2.bold())
                     .foregroundColor(.white)
+                Text("\(session.drawsCount)D")
+                    .font(.caption2.bold())
+                    .foregroundColor(.white)
             }
             .frame(width: 52, height: 52)
-            .background(session.winsCount >= session.lossesCount ? Color.padelMint : Color.padelLoss)
+            .background(sessionSummaryColor(for: session))
             .cornerRadius(12)
             
             VStack(alignment: .leading, spacing: 6) {
@@ -196,5 +203,15 @@ struct HistoryView: View {
             RoundedRectangle(cornerRadius: 16)
                 .stroke(Color.padelBorder, lineWidth: 1)
         )
+    }
+    
+    private func sessionSummaryColor(for session: PadelSession) -> Color {
+        if session.winsCount > session.lossesCount {
+            return .padelMint
+        } else if session.winsCount == session.lossesCount {
+            return .padelNeon
+        } else {
+            return .padelLoss
+        }
     }
 }
